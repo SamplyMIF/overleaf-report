@@ -1,0 +1,32 @@
+\begin{figure*}[h!]
+	\centering 
+	
+	\tikzstyle{block} = [draw, fill=gray!10, rectangle, minimum height=2em, minimum width=4em]
+	\tikzstyle{pinstyleA} = [pin edge={<-,thin,black}]
+	\tikzstyle{pinstyleB} = [pin edge={->,thin,black}]
+	\tikzstyle{choice} = [draw, fill=gray!100, circle, node distance=1cm]
+	
+	\begin{tikzpicture}[auto, node distance=2cm,>=latex']
+	\node [block, pin={[pinstyleA]above:User Request}, node distance=3cm] (grouter) {General Router};
+	\node [block, left of=grouter, node distance=5.5cm] (login) {Login Page};
+	\node [choice, below of=grouter, node distance=1.5cm] (choice) {};
+	
+	\node [block, below of=choice, node distance=1.5cm] (qrouter) {Query Router};
+	\node [block, left of=qrouter, node distance=5.5cm] (calcs) {Calculators};
+	\node [block, below of=qrouter, node distance=2.25cm] (db) {Database};
+	\node [block, right of=qrouter, node distance=5.5cm, pin={[pinstyleB]below:User View}] (ptable) {PUG Renderer};
+	
+	\draw [draw,->] (grouter) -- node[yshift=4pt] {\scriptsize \textit{authenticated}} (choice);
+	\draw [draw,<-] ($(login.east) + (0, 0.25em)$) to [out=20,in=160] node {\scriptsize !\textit{authenticated}} ($(grouter.west) + (0, 0.25em)$);
+	\draw [draw,<-] ($(grouter.west) - (0, 0.25em)$) to [out=200,in=-20] node {\scriptsize New Request} ($(login.east) - (0, 0.25em)$);
+	
+	\draw [draw,->] (choice) -- node {\scriptsize \textit{query}} (qrouter);
+	\draw [draw,->, rounded corners=5pt] (choice.east) node[yshift=5pt, xshift=15pt] {\scriptsize !\textit{query}} -|  (ptable.north);
+	
+	\draw [draw,<-] (ptable.west) to node {\scriptsize Calculation Data} (qrouter.east);
+	\draw [draw,<-] ($(calcs.east) + (0, 0.25em)$) to [out=20,in=160] node {\scriptsize Execution String} ($(qrouter.west) + (0, 0.25em)$);
+	\draw [draw,<-] ($(qrouter.west) - (0, 0.25em)$) to [out=200,in=-20] node {\scriptsize New Data} ($(calcs.east) - (0, 0.25em)$);
+	\draw [draw,->] ($(qrouter.south) + (1em, 0)$) to node {\scriptsize Calculation Data} ($(db.north) + (1em, 0)$);
+	\draw [draw,->] ($(db.north) - (1em, 0)$) to node[yshift=-7pt] {\scriptsize Cached Data} ($(qrouter.south) - (1em, 0)$);
+	\end{tikzpicture}
+\end{figure*}

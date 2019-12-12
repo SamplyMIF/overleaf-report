@@ -1,0 +1,165 @@
+\RequirePackage{silence}
+\WarningFilter{titlesec}{Non standard sectioning command}
+\WarningFilter{scrreprt}{Usage of package}
+\WarningFilter{scrreprt}{Activating an ugly workaround}
+%TC:ignore
+% **************************************************
+% Document Class Definition
+% **************************************************
+\documentclass[
+	a4paper, 
+	twoside=false,				% onesite or twoside printing
+	openright,					% doublepage cleaning ends up right side
+	parskip=full,				% spacing value / method for paragraphs
+	chapterprefix=true,			% prefix for chapter marks
+	12pt,						% font size
+	headings=normal,			% size of headings
+	bibliography=totoc,			% include bib in toc
+	listof=totoc,				% include listof entries in toc
+	titlepage=on,				% own page for each title page
+	captions=tableabove,		% display table captions above the float env
+	draft=false,				% value for draft version
+]{scrreprt}
+
+% **************************************************
+% Information and Commands for Reuse
+% **************************************************
+\newcommand{\thesisTitle}{MEng Group Project Final Report}
+\newcommand{\thesisName}{Cristian Badoi, Aaron Butterworth, Daniel Gardam}
+\newcommand{\thesisSubject}{Report}
+\newcommand{\thesisDate}{December, 2019}
+\newcommand{\thesisVersion}{Draft - 01}
+
+\renewcommand{\figurename}{Fig.}
+\renewcommand{\tablename}{Tab.}
+
+% **************************************************
+% Load and Configure Packages
+% **************************************************
+\usepackage[a4paper, left=2cm,right=1.5cm,top=1.5cm,bottom=1.5cm]{geometry}
+\pagenumbering{gobble}
+\usepackage[shortlabels]{enumitem}   
+\usepackage{calc}
+\usepackage{pgfgantt}
+\usepackage{blindtext}
+\usepackage{pdflscape}
+\usepackage{titling}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{pdfpages}
+\usepackage{blkarray}
+\usepackage{appendix}
+\usepackage{multicol}
+\usepackage[linesnumbered,ruled]{algorithm2e}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[style=numeric-comp]{biblatex}
+\usepackage{float}
+\usepackage{titlesec}
+
+\usetikzlibrary{shapes,arrows}
+
+\titleformat{\chapter}{\normalfont\huge}{}{}{\huge\bf}
+
+\bibliography{bib-refs}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\hypersetup{					% setup the hyperref-package options
+	pdftitle={\thesisTitle},	% 	- title (PDF meta)
+	pdfsubject={\thesisSubject},% 	- subject (PDF meta)
+	pdfauthor={\thesisName},	% 	- author (PDF meta)
+	plainpages=false,			% 	-
+	colorlinks=false,			% 	- colorize links?
+	pdfborder={0 0 0},			% 	-
+	breaklinks=true,			% 	- allow line break inside links
+	bookmarksnumbered=true,		%
+	bookmarksopen=true			%
+}
+
+\lstset{frame=tb,
+	language=C++,
+	aboveskip=3mm,
+	belowskip=3mm,
+	showstringspaces=false,
+	columns=flexible,
+	basicstyle={\small\ttfamily},
+	numbers=none,
+	numberstyle=\tiny\color{gray},
+	keywordstyle=\color{blue},
+	commentstyle=\color{dkgreen},
+	stringstyle=\color{mauve},
+	breaklines=true,
+	breakatwhitespace=true,
+	tabsize=3
+}
+%TC:endignore
+% **************************************************
+% Document CONTENT
+% **************************************************
+\setlength{\parindent}{0pt}
+\renewcommand*{\thesection}{\arabic{section}}
+\begin{document}
+% --------------------------
+% Front matter
+% --------------------------
+\pagestyle{empty}
+\input{content/titlepage}
+\clearpage
+
+\pagenumbering{roman}
+
+\pagestyle{plain}
+\input{content/abstract}
+\cleardoublepage
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\clearpage
+
+% --------------------------
+% Body matter
+% --------------------------
+\pagenumbering{arabic}			% arabic page numbering
+\setcounter{page}{1}			% set page counter
+\pagestyle{plain}
+
+\input{content/introduction}
+\input{content/background}
+\input{content/data-required}
+\input{content/design}
+\input{content/realisation}
+\input{content/evaluation}
+\input{content/learning-points}
+\input{content/professional-issues}
+\clearpage
+% --------------------------
+% Back matter
+% --------------------------
+%\setstretch{1.1}
+\renewcommand{\bibfont}{\normalfont\small}
+\setlength{\biblabelsep}{0pt}
+\setlength{\bibitemsep}{0.5\baselineskip plus 0.5\baselineskip}
+%\nocite{*}
+%\printbibliography[nottype=online]
+%\printbibliography[heading=subbibliography,title={},type=online,prefixnumbers={@}]
+%\clearpage
+
+\input{content/appendix.tex}
+\clearpage
+
+\listoffigures
+\clearpage
+
+\listoftables
+\clearpage
+
+\mbox{}
+
+% **************************************************
+% End of Document CONTENT
+% **************************************************
+\end{document}
