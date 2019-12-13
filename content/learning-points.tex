@@ -1,4 +1,15 @@
 \chapter{Learning Points}
 \label{ch:learning-points}
 
-At least one page of summary of the key learning points in the project.
+From our project it is clear that this approach is a viable way to accelerate material discovery as a traditionally manual and slow task now takes less than a second to be done computationally. Having a completed version of this system would be a major step forwards as multiple test runs can be done in the space of a single previous test. \\
+
+It is also worth noting that the manual method does not scale well into higher dimensions as the variables at play become too complex for an unassisted human to manually refine, our method scales with the size of the null space matrix, therefore our run-time should remain low while the tests get larger. For any matrix $A_{m \times n}$ of m elements and n reagents, the dimension of the null-space is the complement to the rank of A:
+\begin{equation}
+    nullity(A) = n - rank(A) 
+\end{equation}
+\begin{equation}
+    Performance = O(2 \times \sqrt{samples + k})^{2 \cdot nullity(A)}, \forall k <= m 
+\end{equation}
+
+As seen from above, even in an unfavourable case with a rank(A) = 1, k = 0 and $10^{4}$ samples, performance would be $O((2 \times 10^{2})^{2(n-1)})$ 
+Given how low the execution time of the system has become, we hope this can be expanded upon in future to facilitate new discoveries in the field of material science. 

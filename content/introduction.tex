@@ -1,10 +1,13 @@
-\chapter{Introduction - Cris}
+\chapter{Introduction}
 \label{ch:intro}
 
 \section{Problem addressed}
+If a chemist wants to explore a new phase diagram with n elements their process is entirely manual, they must create the compositions themselves in an attempt to find the desired end stoichiometry, checking the phases present in each batch manually and using only their own intuition to alter the compositions and get closer to the goal. \\
+
+This process is massively time and resource consuming, we will attempt to accelerate this procedure by either directly calculating the correct composition given the desired outcome, or by generating a set of possible points that are `close enough' so that the chemist has a head-start on their colleagues using the manual method. If we can succeed in this we can catalyse new material discovery by allowing more compounds to be trialled and faster. 
 
 \section{Aims and Objectives}
-The aim of this project is to create a system capable of calculating, storing and predicting formulae of chemical compounds given a set of precursors, with a focus on optimization and finding an acceptable solution within a given set of bounds. The program is designed to be remotely accessible, with a web server providing a user front end and a space for necessary calculations, and a database for the purposes of storing chemical data and user account information. \\
+The aim of this project is to create a system capable of calculating, storing and predicting formulae of chemical compounds given a set of precursors, with a focus on optimisation and finding an acceptable solution within a given set of bounds. The program is designed to be remotely accessible, with a web server providing a user front end and a space for necessary calculations, and a database for the purposes of storing chemical data and user account information. \\
 
 The project will primarily use C++ for computation, NodeJS with several popular packages for the web server and user interface, and MongoDB for the database system. \\
 
@@ -12,13 +15,12 @@ This project is produced in conjunction with the Materials Innovation Factory an
 
 This project is mainly based on the prior research topics and problems encountered by researchers in the MIF, for example having a person test possible compounds and slowly refine the formula based on their results is a time and material inefficient process, therefore if we can suggest compounds which are either direct results or very close approximations to their desired outcome then this process can be minimised. \\
 
-\subsection{Ethical Use Of Human Participants}
-As with one of our undergraduate projects data from members of the project group does not constitute 3rd party evaluation, and with non-project team members we will be strictly following the CS Department ethical procedure for MEng project 3rd party evaluation. All other data used in the project is well known public data regarding the behaviour of elements. \\
-
 We believe the combination of these factors allows us to proceed without further application for research ethics approval.
 
-\section{Challenges met}
-
 \section{Proposed solution}
-\subsection{Effectiveness}
+Our proposed solution uses LU decomposition to solve incomplete sets of linear equations, giving us a potentially infinite solution space which we must then explore to find the most meaningful data points. \\
 
+As our system needs to we easily accessible by chemists who may not have the subject specific knowledge to compile and run these calculators themselves we also propose a web server and database to allow anyone to access the system, this web UI should be easy to understand so no or minimal training is required to use the end system.
+
+\subsection{Effectiveness}
+Our system as it stands at the end of the project is not feature complete, however the core functionality is present so the general benefit of the system can be assessed. From the current state of the project it is clear that the approach is viable; the currently manual task now takes less than a second to be done computationally. The manual method also does not scale well into higher dimensions as the variables to consider become too complex for an unassisted human to manually refine, our run-time should remain low while the tests get larger.

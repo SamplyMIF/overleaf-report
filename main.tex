@@ -36,14 +36,13 @@
 % **************************************************
 % Load and Configure Packages
 % **************************************************
+\usepackage{hyperref}
 \usepackage[a4paper, left=2cm,right=1.5cm,top=1.5cm,bottom=1.5cm]{geometry}
 \pagenumbering{gobble}
 \usepackage[shortlabels]{enumitem}   
 \usepackage{calc}
+\usepackage{float}
 \usepackage{pgfgantt}
-\usepackage{blindtext}
-\usepackage{pdflscape}
-\usepackage{titling}
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{pdfpages}
@@ -51,18 +50,21 @@
 \usepackage{appendix}
 \usepackage{multicol}
 \usepackage[linesnumbered,ruled]{algorithm2e}
-\usepackage{hyperref}
 \usepackage{listings}
 \usepackage{color}
 \usepackage[style=numeric-comp]{biblatex}
-\usepackage{float}
 \usepackage{titlesec}
+\usepackage{minted}
+\usepackage{booktabs}
+\usepackage{setspace}
+\usepackage{pgfplots}
 
+\usemintedstyle{tango}
 \usetikzlibrary{shapes,arrows}
 
-\titleformat{\chapter}{\normalfont\huge}{}{}{\huge\bf}
+\titleformat{\chapter}{\normalfont\huge}{}{0pt}{\normalfont\huge\bfseries}
 
-\bibliography{bib-refs}
+\bibliography{biblio}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -143,19 +145,19 @@
 \renewcommand{\bibfont}{\normalfont\small}
 \setlength{\biblabelsep}{0pt}
 \setlength{\bibitemsep}{0.5\baselineskip plus 0.5\baselineskip}
-%\nocite{*}
-%\printbibliography[nottype=online]
+\nocite{*}
+\printbibliography[nottype=online]
 %\printbibliography[heading=subbibliography,title={},type=online,prefixnumbers={@}]
 %\clearpage
 
 \input{content/appendix.tex}
-\clearpage
+%\clearpage
 
-\listoffigures
-\clearpage
+%\listoffigures
+%\clearpage
 
-\listoftables
-\clearpage
+%\listoftables
+%\clearpage
 
 \mbox{}
 

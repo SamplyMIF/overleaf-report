@@ -1,19 +1,11 @@
 \chapter{Data Required}
 \label{ch:data-required}
 
-\section{Synthetic Data}
+The entire project makes heavy use of synthetic data in form of library dependencies and hypothetical data in the form of chemical formulas as input. As such no human data was required and therefore, no testing was needed. For the input data, several test cases were provided by Dr Mike Gaultois containing desired chemical composition, available reagents as well as real results obtained from theoretical calculations by Dr. Berhard Leube. \\
 
-% Ignore this for now
-For the input data, several entries from the Cambridge Structural Database
-were used. For testing, I’ve made use of Mercury, a visualisation tool for
-crystal structures that works in unison with the CSD. To use Mercury and
-access the CSD as a resource, a license is required. For the purpose of this
-project, I have been granted a license by Dr Vitaliy Kurlin from the University
-of Liverpool. As integration with the CSD has not been achieved in time, the
-user does not require a license for the CSD to utilise the project, with the
-exception if they choose to use it as a means of extracting crystalline material
-data. In that event, a license will still be required. \\
-A lot of caution has been utilised when selecting 3rd party libraries, and
-all used have been check and proven to be open-source. No further user
-attention is required as the program comes packed with all the required
-library files under a Dynamic-Linked Library (DLL) format. \\
+Other third-party software used, which is not a library, is entirely free and readily available to the public. Microsoft Visual Studio Community was used during development for building the program, as well as NodeJS for running the web-server and Mongo for running the actual database server. Optional but proven very useful for data inspection was MongoDB-Compass, which was utilised to visualise and analyse database entries obtained from our compiled application.\\
+
+A lot of caution has been utilised when selecting 3rd party libraries, and all used have been check and proven to be open-source. No further user attention is required as the program comes packed with all the required library files under a Dynamic-Linked Library (DLL) format.
+
+\section{Ethical Use Of Human Participants}
+As with one of our undergraduate projects data from members of the project group does not constitute 3rd party evaluation, and with non-project team members we will be strictly following the CS Department ethical procedure for MEng project 3rd party evaluation. All other data used in the project is well known public data regarding the behaviour of elements. \\

@@ -5,61 +5,151 @@
 \subsubsection{Parsing input and data initialisation}
 The first component of the calculator is responsible for parsing and initialising the state, element, and reagent manager objects with data extracted from the the given input through the command prompt. \\
 
-Input form the command prompt given either by the user if used directly or thought the web interface is extracted into corresponding data structures for each cli parameter. Boost provides us with a robust and simple approach that also guarantees variable type safetyness. \\
+Input form the command prompt given either by the user if used directly or thought the web interface is extracted into corresponding data structures for each CLI parameter. Boost \cite{karlsson2005} provides us with a robust and simple approach that also guarantees variable type safeness. \\
 
-Parsing of the given chemical formula is needed to convert the data from a simple string to a more usable format usable for creating the matrices utilised in generating solutions. This is achieved through the use of a "parse" function (snapshot/link to appendix) called twice, once for the string containing the stoichiometry chemical formula and then once again for the string with the reagents. The function splits the input on tokens based on the space character and then appplies a regex match function in order to further divide each token into elements, denoted by an uppercase character followed by an optional lowercase one. By explicitly saving up the unmatched results of the regex function, the integers denoting the quantity of each element present are also added into the new array of subtokens? (think about this). Finally, a reagent object is created by going through this array and pairing elements with quantities. At this stage the string generation functionality of the reagent class is invoked to construct and cache a corresponding readable chemical formula string.\\
+Parsing of the given chemical formula is needed to convert the data from a simple string to a more usable format usable for creating the matrices utilised in generating solutions. This is achieved through the use of a "parse" function (appendix B) called twice, once for the string containing the stoichiometry chemical formula and then once again for the string with the reagents. The function splits the input on tokens based on the space character and then applies a regex match function in order to further divide each token into elements, denoted by an uppercase character followed by an optional lowercase one. By explicitly saving up the unmatched results of the regex function, the integers denoting the quantity of each element present are also added into the new array of sub-tokens. Finally, a reagent object is created by going through this array and pairing elements with quantities. At this stage the string generation functionality of the reagent class is invoked to construct and cache a corresponding readable chemical formula string.\\
 
-Depending on on which mode the calculator is being used in, the resulting reagent for the stoich input is stored in a single reagent object, whilst the respective list of available reagents are stored inside a ragentdb object. If the mode is set to 0 (stoich mode), the reagentdb object will be filled with single-element reagents, each corresponding to one element and quantity from the stoich input, this is done as to simplify both generation of the matrix contents and csv exports later on. \\
+Depending on on which mode the calculator is being used in, the resulting reagent for the stoichiometry input is stored in a single reagent object, whilst the respective list of available reagents are stored inside a ReagentDB object. If the mode is set to 0 (stoichiometry mode), the ReagentDB object will be filled with single-element reagents, each corresponding to one element and quantity from the stoichiometry input, this is done as to simplify both generation of the matrix contents and CSV exports later on. \\
 
-ElementDB and StateDB inits go here. \\
+%%
+%% -------------- ElementDB and StateDB inits go here. \\ -------------------------
+%%
 
 \subsubsection{Generation of a solution and its null-space}
-After the input data is properly organised into its respective containers, an array of pairs of matrices containing systems of linear equations is generated based on the stoich reagent and reagentdb object. If the calculator is run with mode = 0, only a single matrix pair is created, as the precursor matrix utilises different equations than the stoichiometry matrices, whilst the mode = 0 requires multiple matrix pairs to account for multiple charge states present for a single element. (hyperref to design to understand what im talking about?) \\
+After the input data is properly organised into its respective containers, an array of pairs of matrices containing systems of linear equations is generated based on the stoichiometry reagent and ReagentDB object. If the calculator is run with mode = 0, only a single matrix pair is created, as the precursor matrix utilises different equations than the stoichiometry matrices, whilst the mode = 0 requires multiple matrix pairs to account for multiple charge states present for a single element. \\
 
-Each pair obtained now contains 2 matrices, a matrix of equations A and a matrix of "insert term here" B. For each pair, we use Eigen to solve AX = B [hyperref to design] we obtain a solution vector X as well as a kernel matrix K [more hyperref to design] \\
+Each pair obtained now contains 2 matrices, A and B which define the system of equations to be solved. For each pair, we use Eigen to solve AX = B (as mentioned in \href{section:computation}{Computation} in the design section)  we obtain a solution vector X as well as a kernel matrix K. \\
 
 \subsubsection{Validation and generation of the finite solution-space}
-The first solution and the matrix null-space generated by Eigen is then validated and used to generate a finite number of solutions correspnding to the user specified number of samples. The most basic criterion for validation is if the solution contains all-positive real values, with all solutions with even one negative value not being added into the solutionDB object. The only other criterion for validation is if the newly computed solution $S_{x} = X + v_{1}C_{1} + ... + v_{n}C_{n}$ ($v_{1} ... v_{n}$ is a null-space vector and C is a combination with n being the number of null-space vectors/columns) satisfies $AS_{x} = B$ as $AX = B$ previously did. \\
+The first solution and the matrix null-space generated by Eigen \cite{eigen} is then validated and used to generate a finite number of solutions corresponding to the user specified number of samples. The most basic criterion for validation is if the solution contains all-positive real values, with all solutions with even one negative value not being added into the solutionDB object. The only other criterion for validation is if the newly computed solution $S_{x} = X + v_{1}C_{1} + ... + v_{n}C_{n}$ ($v_{1} ... v_{n}$ is a null-space vector and C is a combination with n being the number of null-space vectors/columns) satisfies $AS_{x} = B$ as $AX = B$ previously did. \\
 
-$C_{n}$ is generated as the combination of nk with repetitions of a set of real values using the formula [insert formula here] with k being the number of null-space columns/vectors, and n being the size of the set. The set members are generated in an iterative manner going from 1 to a $1/max_denominator$ value, with 0 being added post-loop. The $max_denominator$ value is obtained by summing the square root of the desired number of samples and the averege number of negative null-space values per column. This approach aims to generate more combinations than samples required as if even a single null-space vector contains a negative value, it might cause several generated solutions to be negative and as such, yield less than the amount of samples requested by the user. 
+$C_{n}$ is generated as the combination of nk with repetitions of a set of real values using the formula $C_{n}^{k}=\frac{(n+k-1)!}{k!(n-1)!}$ with k being the number of null-space columns/vectors, and n being the size of the set. 
 
-At this point, the solution is nothing more than an arrray of real values, and must furst be transformed into an usable format before being delivered back to the user/webserver. A solution object is used to achieve this process, which contains the array of values itself, as well as ther rational approximation of each value and the total score of the solution. The rational approximation is computed using an algorithm proposed by David Eppstein (reference here) and used in rounding, as well as calculating the score of a solution. The score itself is calculated as the LCM (code image) of the denominators of each value present in the solution vector.
+The set members are generated in an iterative manner going from 1 to a $1/max\_denominator$ value, with 0 being added post-loop. The $max\_denominator$ value is obtained by summing the square root of the desired number of samples and the average number of negative null-space values per column. This approach aims to generate more combinations than samples required as if even a single null-space vector contains a negative value, it might cause several generated solutions to be negative and as such, yield less than the amount of samples requested by the user. 
 
-\subsubsection{Post-Computation trimming of uneeded results and output}
-Finally the excess solution data in the solutiondb object that exceeds the amount of desired samples is discarded based on highest score (less desired), with the remaining data being processed to be exported into a csv file that can either be read by the user or is automatically loaded into the database by the webserver. \\
+At this point, the solution is nothing more than an array of real values, and must first be transformed into an usable format before being delivered back to the user/web-server. A solution object is used to achieve this process, which contains the array of values itself, as well as their rational approximation of each value and the total score of the solution. The rational approximation is computed using an algorithm proposed by David Eppstein \cite{eppstein1993} and used in rounding, as well as calculating the score of a solution. The score itself is calculated as the LCM of the denominators of each value present in the solution vector.
+\begin{minted}{c++}
+    // return lcm of 2 numbers
+	inline int lcm(int a, int b) {
+		int temp = boost::math::gcd(a, b);
+
+		return temp ? (a / temp * b) : 0;
+	}
+\end{minted}
+\begin{minted}{c++}
+    // Compute score; rational split changes a vector of pairs (num, denom) in a pair (vec of num, vec of denoms)
+	auto rv = math::rational_split(_selfr);
+	_score = abs(std::accumulate(rv.second.begin(), rv.second.end(), 1, math::lcm));
+\end{minted}
+
+
+\subsubsection{Post-Computation trimming of unneeded results and output}
+Finally the excess solution data in the SolutionDB object that exceeds the amount of desired samples is discarded based on highest score (less desired), with the remaining data being processed to be exported into a CSV file that can either be read by the user or is automatically loaded into the database by the web server. \\
 
 \subsection{Web server}
 \subsubsection{Routing}
+The first stage of handling an incoming request is to find which router will best deal with it in the context of the users session. Firstly we check if the user is authenticated, if they are not we simply send them to the login page and resolve the request, if they are we look more precisely at the URL and match it with one of several generic formats. If no suitable router is found then the request is resolved by sending the user a generic 404 error page. \\
 
+Express allows us to use generic strings to match URLs, for example see this definition for the precursor calculator:  
+\begin{minted}{javascript}
+router.get('/calc/pre/:quantity/:elements/:precursor/:propMass',
+  function(req, res){
+
+}); 
+\end{minted}
+
+The first section must be \mintinline{js}{'/calc/pre'} followed by 4 parameters separated by slashes, if this router is matched then express makes the parameters available immediately as JS variables with the same name as used in the generic string. \\
+
+For example \mintinline{js}{'/calc/pre/20/Li-Al-S-O/Li2S-Al2S3-Al2O3-LiAlO2-Li2O/true-false'} will match this router, and return a set of JS objects as follows:
+
+\begin{minted}{javascript}
+req.params.quantity  = "20"
+req.params.elements  = "Li-Al-S-O"
+req.params.precursor = "Li2S-Al2S3-Al2O3-LiAlO2-Li2O"
+req.params.propMass  = "true-false"
+\end{minted}
+
+Routers may also have nested structure, for example instead of all routers having to check if the user is authenticated, the first router matches everything, and only passes the request onward if they have authenticated successfully. This allows us to avoid rewriting this function multiple times.
+
+\subsubsection{Invoking Calculators}
+The calculators themselves are called inside of a promise block, this allows us to run synchronous code in an asynchronous fashion by defining a function that will only be called once the code in the promise has executed fully.
+
+\begin{minted}{js}
+var execPromise = new Promise(function(resolve, reject) {
+    exec(execString, {
+        cwd: exeDir
+    }, function(error, stdout, stderr) {
+        // Read CSV and push contents into DB, then resolve promise
+    }
+});
+
+// ... 
+
+execPromise.then(function(resultPromise) { 
+    // Pull data from the DB and render PUG page
+});
+\end{minted}
+
+In the function \mintinline{js}{execPromise.then()} we know that the code contained within \mintinline{js}{execPromise} has fully executed, therefore we can safely read from the database knowing we will get the whole result. \\ 
+
+Any other code around these blocks is also run asynchronously, therefore any function can be called in the space marked ``\mintinline{js}{// ...}'' and will run at the same time as the calculator, or perhaps at the same time as the \mintinline{js}{execPromise.then()} function, or before/after both of them. This behaviour caused several bugs in development however we believe it to be a valuable tool as it allows us to keep the web server listening for more user requests while it processes one instead of blocking and resolving them one-by-one.
+
+\subsubsection{Database Integration}
+Connections can be opened to the database at any point in the program, and we are not limited to one connection at a time. Therefore we only open a connection when we need it and close it immediately after the result is generated in order to keep the number of simultaneous connections as low as possible. 
+
+\begin{minted}{js}
+MongoClient.connect(url, {useUnifiedTopology: true}, function(err, db) {
+    var dbo = db.db("stoich");
+	
+    var query = {};
+    var sorter = {Score : 1};
+    var filter = {projection:{_id:0, Name:1, Score:1}};
+
+    dbo.collection(elementList).find(query, filter).sort(sorter)
+      .limit(50).toArray(function(err, result) {
+        // Data available here
+    });
+});
+\end{minted}
+
+As with the general theme of the web server, all interaction with the database is done asynchronously via callback functions.
 
 \section{Problems encountered}
-This section will be used to enumerate problems encountered during the
-implementation of the project’s goal. We present issues that have been found
-a solution to, and fleshed out, but also issues that remain with the current
-implementation. The remaining problems will present a potential solution
-that can be implemented in the future. \\
+This section will be used to enumerate problems encountered during the implementation of the project’s goal. We present issues that have been found a solution to, and fleshed out, but also issues that remain with the current implementation. The remaining problems will present a potential solution that can be implemented in the future.\\
 
 \subsection*{Accuracy and Performance}
 Our first approach of realising our design was with using Linear-Integer Programming (linear programming) optimisation tools using Gurobi and later on switching to Google based OR-tools. In both cases, performance was similar and satisfactory but we experienced a lack of control over the generation of solutions, as well as their accuracy when multiple solutions are concerned. In hindsight, this is to be expected as these approaches are primarily focused on optimising the primary solution, whereas we require good representation for a given number of desired solutions. Moreover whilst the solver by itself is fast, its initialisation is not, which presented an issue for the stoichiometry part as it required multiple nationalisations for different values of charges for each element. Finally, we had no way of requesting a specific amount of solutions from the solver other than the one presented to us, in most cases resulted with a disproportion of generated results compared to desired amount of samples. \\
 
-Under the advise of Dr Vitaliy Kurlin, we switched to a more mathematical approach, utilising linear algebra to find one solution using LU decomposition and then using it afterwards to generate a potentially infinite solution-space using the kernel of the initial matrix of linear equations A. Using this approach we were able to gain control over how many solutions we present to the user, as well as tweak our performance issues with the stoichiometry functionality, as decomposing a matrix is far cost-effecting than re-initialising the entire solver backend with new data. \\
+Under the advise of Dr Vitaliy Kurlin, we switched to a more mathematical approach, utilising linear algebra to find one solution using LU decomposition and then using it afterwards to generate a potentially infinite solution-space using the kernel of the initial matrix of linear equations A. Using this approach we were able to gain control over how many solutions we present to the user, as well as tweak our performance issues with the stoichiometry functionality, as decomposing a matrix is far cost-effecting than re-initialising the entire solver back end with new data. \\
 
 \subsection*{Combinatorial weights}
-This was the longest and most persistent issue we had to deal with after switching from the approach of using solvers. As each new solution would be defined as $S_{x} = X + v_{1}N_{1} + ... + v_{n}N_{n}$ ($v_{1} ... v_{n}$ is a null-space vector and N being any real number) satisfies $AS_{x} = B$, we needed a way to obtain N in a meaninful way that also produces good representation. Unfortunately due our inexperience we took a very naive approach of generating all possible combinations C nk (formula here) of a set ranging from 0 to 1 using an varying iterator given as input parameter, usually 0.003 or 0.001 during testing. This produced varying problems for the performance of our application and would persist for most of the development time as we didn't consider speed and disk space efficiency a priorirty at that point in time, but would later be changed for a more optimised and smarter approach after receiving important feedback from the users in the MIF. (link to section) \\
+This was the longest and most persistent issue we had to deal with after switching from the approach of using solvers. As each new solution would be defined as $S_{x} = X + v_{1}N_{1} + ... + v_{n}N_{n}$ ($v_{1} ... v_{n}$ is a null-space vector and N being any real number) satisfies $AS_{x} = B$, we needed a way to obtain N in a meaningful way that also produces good representation. Unfortunately due our inexperience we took a very naive approach of generating all possible combinations C nk (formula here) of a set ranging from 0 to 1 using an varying iterator given as input parameter, usually 0.003 or 0.001 during testing. This produced varying problems for the performance of our application and would persist for most of the development time as we didn't consider speed and disk space efficiency a priority at that point in time, but would later be changed for a more optimised and smarter approach after receiving important feedback from the users in the MIF. (link to section) \\
 
 To give an idea of how terrible of an approach this way, one of our more used tests, the chemical formula "LiAlSO" would produce a kernel with 2 null-space vectors and using the formula for combinations (insert formula here) would give C = 50,050,000 "initial" solutions, which would then have to be validated individually. On an laptop Intel i7 this test would take around 30 seconds if we were to generate all combinations every time. An approach to cache these combination into a generic text file that could be read when needed was taken to reduce computation time, but would only reduce it to roughly 12 seconds. This is in vast contrast to our final approach that takes as little as 0.02 seconds and generates only enough solutions to match the requests number of desired solutions. \\
 
 \subsection*{Precision Errors}
 Another key problem that was persistent for most of the development period was floating point precision errors, as we'd get solutions with 0.33334 and say, 0.3332323 for one of your very early "LiAlSO" tests. The apparent issue is that the program treated them as different solutions when they should have been interpreted as one the same, which created situations where the program would not give us our desired solutions when trying to replicate given test data. Initially our approach was to just cut down decimals, but when working with high precision and values that need to eventually need to be reproduced in real life this was not a desirable way moving forward. As such we decided to convert all real values into their respective rational representations (link to section), which for the 2 examples given above would output 1/3, thus solving our precision "errors".
 
-\subsection*{3-Way Integration - Aaron}
+\subsection*{3-Way Integration}
+Outside of the calculators a major issue was integration between NodeJS (web server), C++ (calculators), and the database. Early issues regarded the CSV file from the calculators not having a predictable structure for the web server to parse, causing a seemingly perfect execution of the calculators to produce no entry in the database. This was solved by including the number of solutions in the std::out stream so the web server knows what to expect before opening the CSV file. \\
 
+We then had an issue with building the calculators, we had been working on Windows, however in order to allow members of the team to test the program we needed to run it on a laptop, of which we only had a MacBook available, therefore the calculators and all their dependencies needed to be recompiled. This prompted the current system of using CMake and the VCPKG (A free cross-platform package manager developed by Microsoft) which allows us to quickly build the project on nearly any system.
 
 \section{Testing}
 Most components have been tested solely internally, only with the web-server being presented for user-testing for Dr. Berhard Leube, a colleague of Dr. Vitaly Kurlin and Dr. Mike Gaultois in the MIF. However, Dr. Mike Gaultois and Dr. Vladimir Gusev have been presented with results of isolated runs of the calculator component at various times during the development of the project. \\
 
-The calculator is the brain of this project, and has been rightfully tested the most, although on limited input parameters due to our lack of chemical knowledge outside given synthesised compounds. The chemical formula "LiAlSO" would end up being our default test input, as it had four elements present, as well as five given precursors, "Li2S Al2S3 Al2O3 LiAlO2 Li2O", making it not too easy but not too complicated either for our O(insert running performance here) complexity. \\
+\subsection{Calculator}
+The calculator is the brain of this project, and has been rightfully tested the most, although on limited input parameters due to our lack of chemical knowledge outside given synthesised compounds. The chemical formula "LiAlSO" would end up being our default test input, as it had four elements present, as well as five given precursors, "Li2S Al2S3 Al2O3 LiAlO2 Li2O" and a nullity of 2, making it not too easy but not too complicated. \\
 
+When testing against "LiAlSO" we would look for very particular, simple and "whole" solutions, such as 0.25 Li2-S, 0.25 Al2-S3, 0.5 Li-Al-O2 or provided solution: 0.3333 Al2-S3, 0.3333 Li-Al-O2, 0.3333 Li2-O. With results not corresponding do our expected output initially due to our approach of tacking floating point precision errors, however as we changed our implementation such problems disappeared and expected output would correspond with given solutions. \\
 
-stuff\\
-Planned parallelism cut due to time constraints but code is more than ready for it \\
+Individual components were in primarily two ways. Memory inspection was considered a powerful to analyse data at various times during computation and was utilised in almost every component save for the CSV export, as the created file could be checked manually. \\ 
+
+The input parsing and assembling component didn't require much testing at all other than an initial memory inspection to check if the data is being saved as the correct type. A small exception was the initial implementation of the regex function which had its output dumped using std::cout to the console as we didn't know how it would tokenize strings when requesting that both the matched and unmatched results be retained. \\
+
+The constructed matrices were also sometimes displayed using std::cout as to ensure the construction of the system of equation was valid in various input tests. In the current version, a "--debug" parameter allows for quick change between displaying information which is only needed for safe checking and otherwise unneeded in normal runs. \\
+
+Generated solutions were tested by looking directly at the data inside the created CSV file, initial approaches attempted both visualisation on the console and value inspection inside memory but as the first implementations generated an unrealistic amount of solutions at first, this was deemed too tedious without a dedicated search function that a text editor provides. \\
+
+\subsection{Web Server and DB}
+The web server and database were tested firstly by using fake data and not running the calculators, this allowed us to ensure that the workflow was usable and our PUG files rendered properly. After integration we tested the web server by running the same tests we used for the calculators just in a graphical format. The database was tested by running calculator queries via the web interface then checking the state of the database with the MongoDB Compass software, this allows us high level views of the data stored and also performance metrics such as the average time queries take and the amount of memory being used by each collection in a database.

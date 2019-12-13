@@ -1,14 +1,70 @@
-\addcontentsline{toc}{chapter}{Appendices}
+%\addcontentsline{toc}{chapter}{Appendices}
+
+%\appendix
+%\label{app:a}
+%\addcontentsline{toc}{section}{Appendix A - Figures and Diagrams}
+%\vspace*{-10mm}
+%\chapter*{Figures and Diagrams}
+%\label{ch:figs}
+%\clearpage
 
 \appendix
-\addcontentsline{toc}{section}{Appendix A - Figures and Diagrams}
+\label{app:b}
+\addcontentsline{toc}{chapter}{Appendix B - Code Listings}
 \vspace*{-10mm}
-\chapter*{Figures and Diagrams}
-\clearpage
+\chapter*{Appendix B - Code Listings}
+\label{ch:code}
+
+\begin{lstlisting}[caption={Input parse function}, label={lst:parse}]
+void Input::parse(std::string content) {
+    boost::char_separator<char> s0(" ");
+    boost::tokenizer<boost::char_separator<char>> t2(content, s0);
+    int tsize = std::distance(t2.begin(), t2.end());
+    for (const auto& t : t2) {
+        Reagent reagent;
+        boost::regex re("[A-Z][a-z]?");
+        boost::sregex_token_iterator ti(t.begin(), t.end(), re, { -1, 0 });
+        std::vector<std::string> tokens;
+        std::remove_copy_if(ti, boost::sregex_token_iterator(), std::back_inserter(tokens), [](std::string const& s) { return s.empty(); });
+        int last_type = 2;
+        std::vector<std::string> elements;
+        std::vector<int> amounts;
+        for (auto& p : tokens) {
+            if (std::isdigit(p[0])) {
+                int amount;
+                std::stringstream(p) >> amount;
+                amounts.push_back(amount);
+                last_type = 2;
+            }
+            else {
+                if (last_type == 1) {
+                    amounts.push_back(1); }
+                elements.push_back(p);
+                last_type = 1;
+            }
+        }
+        if (last_type == 1) {
+            amounts.push_back(1);
+        }
+        for (int i = 0; i < elements.size(); ++i) { 
+            reagent.insert(Element(elements[i], amounts[i])); }
+        if (tsize == 1) { _self.r = reagent; }
+        else { v_self.rdb.insert(reagent); }
+    }
+    if (_self.mode == 0) {
+        for (auto e : _self.r()) {
+            Reagent re;
+            re.insert(e);
+            _self.rdb.insert(re);
+        }
+        for (auto rs : _self.rdb()) {
+            rs.str();
+        }
+        _self.r.str();
+    }
+}
+\end{lstlisting}
 
 
-\appendix
-\addcontentsline{toc}{section}{Appendix B - Code Listings}
-\vspace*{-10mm}
-\chapter*{Code Listings}
+
 \clearpage

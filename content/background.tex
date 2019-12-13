@@ -1,18 +1,32 @@
 \chapter{Background}
 \label{ch:background}
+\section{Chemical compounds and charges}
+For the purposes of this project\footnote{Apologies to any pure chemists who find this, especially the computational kind.} a chemical compound can be defined as a grouping of elements, in various non-zero quantities. A compound may be charged or uncharged, and this depends on the charge present on each element in the compound; if the net is $0$ then the compound is considered `charge balanced' or uncharged. \cite{mcnaught1997compendium} \\
 
-This will give all the background of the project including\\
-• Background of the problem to be solved.\\
-• Existing solutions/approaches to the problem, if any exist, and a comparison
-with the solution produced in the project.\\
-• Reading and research done to understand existing approaches, acquire the
-necessary information and skills to carry out the project.\\
-• A clear statement of the project requirements.\\
-References to all sources consulted are expected. \\
+An element may have one of many possible charges, for our purposes this is a property of the element itself not its surrounding compound. For example, oxygen can be found in any of the following states: $-2,\ -1,\ +1,\ +2$. \cite{mcnaught1997compendium} \\
 
-\section{Chemistry section I}
-\section{Chemistry section II bogaloo}
-\section{Some tech-based section}
+Loosely defined `stoichiometry' can refer to a set of elements or compounds acting as either input or output from the system, it simply relates something to a quantity. \cite{mcnaught1997compendium} \\
+
+\section{Linear algebra}
+\subsection{LU decomposition}
+Lower-upper (LU) decomposition or factorisation represents the separation of a matrix into the product between a lower triangular matrix and an upper triangular matrix, with sometimes including a permutation matrix as well. It represents the matrix form of Gaussian elimination and is commonly as well as in this project, used for solving systems of linear equations.\cite{schwarzenberg1995matrix} \\
+The LU decomposition utilised by Eigen in project is referred as \textit{LU factorisation with full pivoting} \cite{trefethen1997numerical} as it involves both row and column permutations.
+
+\begin{center}
+  $PAQ = LU$, \\
+  \vspace{0.5em}
+  where $P$ is a permutation matrix, \\
+  and $Q$ is a permutation matrix that reorders the columns of $A$
+\end{center}
+
+\subsection{Kernel}
+The kernel, or null-space is the set of vectors in the domain of the mapping which maps to the zero vector. When the linear map is represented as a $m \times n$ matrix the kernel is the set of solutions to the equation $AX = 0$, where $0$ is understood as the zero vector. The dimension of the kernel of $A$ is called the nullity of $A$ and is the complement to the rank of $A$.
+
 \section{Existing approaches}
-\section{Research}
-\section{Project requirements?}
+The only existing approach is done mostly manually with computers only assisting in number generations.
+
+Generating the a viable stoichiometry is done by enumerating all possible combinations of the desired elements with one atom, and up to a desired n number of atoms, usually twenty. After all combinations are done, every solution is then charge balanced, resulting in most of the data being thrown out, resulting in a lot of wasted time and resources. \\
+
+Arriving at a solution for desired precursor ratios and amounts is a much jarring task, as it done in a trial-and-error fashion in the lab. After each synthesis the necessary amounts are adjusted and retried until the chemists arrive at desired ratios. \\
+
+Our proposed solution will attempt to remedy both of these setbacks, by relying on predicting stoichiometries based on already defined constraints, eliminating the need for useless post-processing of data, as well as attempting to assemble the most viable combination of precursors that would not inconvenience the chemist.\\
